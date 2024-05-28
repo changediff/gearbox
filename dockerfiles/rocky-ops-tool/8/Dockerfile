@@ -52,16 +52,21 @@ RUN dnf install -y moreutils tmux vim wget curl jq rsync procps-ng findutils ope
     dnf clean all
 RUN dnf install -y fastfetch && \
     dnf clean all
+#### Code Tools
+RUN dnf install -y python3 python3-pip vim git golang && \
+    dnf clean all
+#### Bin
 WORKDIR /usr/bin
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256" && \
     echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check && \
     chmod +x kubectl && \
     curl -Ss https://dl.k8s.io/release/stable.txt > kubectl.version.txt
-#### Code Tools
-RUN dnf install -y python3 python3-pip vim git golang && \
-    dnf clean all
-#### Bin
+WORKDIR /tmp
+RUN curl -LO https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux-amd64-rhel8.tar.gz && \
+    tar zxvf openshift-client-linux-amd64-rhel8.tar.gz && \
+    /usr/bin/cp /tmp/oc /usr/local/bin/oc && \
+    rm -rf /tmp/*
 RUN mkdir -p /opt/bin && chmod -R 777 /opt/bin
 ENV PATH=/opt/bin:$PATH
 # Set Workdir
